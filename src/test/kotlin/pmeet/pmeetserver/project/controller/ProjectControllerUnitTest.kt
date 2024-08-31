@@ -16,13 +16,14 @@ import org.springframework.security.test.web.reactive.server.SecurityMockServerC
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.expectBody
 import pmeet.pmeetserver.config.TestSecurityConfig
-import pmeet.pmeetserver.project.dto.comment.response.ProjectCommentResponseDto
 import pmeet.pmeetserver.project.dto.comment.ProjectCommentWithChildDto
+import pmeet.pmeetserver.project.dto.comment.response.GetProjectCommentResponseDto
+import pmeet.pmeetserver.project.dto.comment.response.GetProjectCommentWithChildResponseDto
 import pmeet.pmeetserver.project.dto.request.CreateProjectRequestDto
 import pmeet.pmeetserver.project.dto.request.RecruitmentRequestDto
 import pmeet.pmeetserver.project.dto.request.SearchProjectRequestDto
 import pmeet.pmeetserver.project.dto.request.UpdateProjectRequestDto
-import pmeet.pmeetserver.project.dto.response.GetMyProjectResponseDto
+import pmeet.pmeetserver.project.dto.response.GetOwnedProjectResponseDto
 import pmeet.pmeetserver.project.dto.response.ProjectResponseDto
 import pmeet.pmeetserver.project.dto.response.ProjectWithUserResponseDto
 import pmeet.pmeetserver.project.dto.response.RecruitmentResponseDto
@@ -35,8 +36,6 @@ import pmeet.pmeetserver.user.dto.response.UserResponseDtoInProject
 import pmeet.pmeetserver.util.RestSliceImpl
 import java.time.LocalDate
 import java.time.LocalDateTime
-import pmeet.pmeetserver.project.dto.comment.response.GetProjectCommentResponseDto
-import pmeet.pmeetserver.project.dto.comment.response.GetProjectCommentWithChildResponseDto
 
 @WebFluxTest(ProjectController::class)
 @Import(TestSecurityConfig::class)
@@ -618,15 +617,15 @@ internal class ProjectControllerUnitTest : DescribeSpec() {
       }
     }
 
-    describe("GET /api/v1/projects/my-project-slice") {
+    describe("GET /api/v1/projects/owned") {
       context("인증된 유저의 나의 Project SLice 조회 요청이 들어오면") {
         val userId = "1234"
         val pageNumber = 0
         val pageSize = 6
         val pageable = PageRequest.of(pageNumber, pageSize)
-        val responseDto = mutableListOf<GetMyProjectResponseDto>()
+        val responseDto = mutableListOf<GetOwnedProjectResponseDto>()
         for (i in 1..20) {
-          val myProjectResponseDto = GetMyProjectResponseDto(
+          val myProjectResponseDto = GetOwnedProjectResponseDto(
             id = "testId$i",
             title = "testTitle$i",
             startDate = LocalDateTime.of(2024, 7, i, 0, 0, 0),
@@ -637,7 +636,7 @@ internal class ProjectControllerUnitTest : DescribeSpec() {
           )
           responseDto.add(myProjectResponseDto)
         }
-        coEvery { projectFacadeService.getMyProjectSlice(userId, pageable) } answers {
+        coEvery { projectFacadeService.getOwnedProjectSlice(userId, pageable) } answers {
           SliceImpl(responseDto.subList(0, pageSize), pageable, true)
         }
 
@@ -646,7 +645,7 @@ internal class ProjectControllerUnitTest : DescribeSpec() {
           .mutateWith(mockAuthentication(mockAuthentication))
           .get()
           .uri { uriBuilder ->
-            uriBuilder.path("/api/v1/projects/my-project-slice")
+            uriBuilder.path("/api/v1/projects/owned")
               .queryParam("page", pageNumber)
               .queryParam("size", pageSize)
               .build()
@@ -654,7 +653,7 @@ internal class ProjectControllerUnitTest : DescribeSpec() {
           .exchange()
 
         it("서비스를 통해 데이터를 조회한다") {
-          coVerify(exactly = 1) { projectFacadeService.getMyProjectSlice(userId, pageable) }
+          coVerify(exactly = 1) { projectFacadeService.getOwnedProjectSlice(userId, pageable) }
         }
 
         it("요청은 성공한다") {
@@ -662,7 +661,7 @@ internal class ProjectControllerUnitTest : DescribeSpec() {
         }
 
         it("조회한 나의 Project 정보를 반환한다") {
-          performRequest.expectBody<RestSliceImpl<GetMyProjectResponseDto>>().consumeWith { response ->
+          performRequest.expectBody<RestSliceImpl<GetOwnedProjectResponseDto>>().consumeWith { response ->
             response.responseBody?.content?.size shouldBe pageSize
             response.responseBody?.content?.forEachIndexed { index, getMyProjectResponseDto ->
               getMyProjectResponseDto.id shouldBe responseDto[index].id
@@ -682,7 +681,7 @@ internal class ProjectControllerUnitTest : DescribeSpec() {
         val performRequest = webTestClient
           .get()
           .uri { uriBuilder ->
-            uriBuilder.path("/api/v1/projects/my-project-slice")
+            uriBuilder.path("/api/v1/projects/owned")
               .queryParam("page", pageNumber)
               .queryParam("size", pageSize)
               .build()

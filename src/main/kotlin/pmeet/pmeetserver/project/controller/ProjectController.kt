@@ -21,7 +21,7 @@ import pmeet.pmeetserver.project.dto.comment.response.GetProjectCommentWithChild
 import pmeet.pmeetserver.project.dto.request.CreateProjectRequestDto
 import pmeet.pmeetserver.project.dto.request.SearchProjectRequestDto
 import pmeet.pmeetserver.project.dto.request.UpdateProjectRequestDto
-import pmeet.pmeetserver.project.dto.response.GetMyProjectResponseDto
+import pmeet.pmeetserver.project.dto.response.GetOwnedProjectResponseDto
 import pmeet.pmeetserver.project.dto.response.ProjectResponseDto
 import pmeet.pmeetserver.project.dto.response.ProjectWithUserResponseDto
 import pmeet.pmeetserver.project.dto.response.SearchProjectResponseDto
@@ -114,13 +114,13 @@ class ProjectController(
     projectFacadeService.deleteBookmark(userId.awaitSingle(), projectId)
   }
 
-  @GetMapping("/my-project-slice")
+  @GetMapping("/owned")
   @ResponseStatus(HttpStatus.OK)
-  suspend fun getMyProjectSlice(
+  suspend fun getOwnedProjectSlice(
     @AuthenticationPrincipal userId: Mono<String>,
     @RequestParam(defaultValue = "0") page: Int,
     @RequestParam(defaultValue = "6") size: Int
-  ): Slice<GetMyProjectResponseDto> {
-    return projectFacadeService.getMyProjectSlice(userId.awaitSingle(), PageRequest.of(page, size))
+  ): Slice<GetOwnedProjectResponseDto> {
+    return projectFacadeService.getOwnedProjectSlice(userId.awaitSingle(), PageRequest.of(page, size))
   }
 }

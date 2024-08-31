@@ -32,7 +32,7 @@ import pmeet.pmeetserver.project.dto.comment.ProjectCommentWithChildDto
 import pmeet.pmeetserver.project.dto.request.CreateProjectRequestDto
 import pmeet.pmeetserver.project.dto.request.RecruitmentRequestDto
 import pmeet.pmeetserver.project.dto.request.UpdateProjectRequestDto
-import pmeet.pmeetserver.project.dto.response.GetMyProjectResponseDto
+import pmeet.pmeetserver.project.dto.response.GetOwnedProjectResponseDto
 import pmeet.pmeetserver.project.dto.response.ProjectResponseDto
 import pmeet.pmeetserver.project.dto.response.ProjectWithUserResponseDto
 import pmeet.pmeetserver.project.dto.response.SearchProjectResponseDto
@@ -983,7 +983,7 @@ internal class ProjectIntegrationTest : BaseMongoDBTestForIntegration() {
       }
     }
 
-    describe("GET api/v1/projects/my-project-slice") {
+    describe("GET api/v1/projects/owned") {
       context("인증된 유저의 나의 Project Slice 조회 요청이 들어오면") {
         val userId = "1234"
         val pageNumber = 0
@@ -1014,7 +1014,7 @@ internal class ProjectIntegrationTest : BaseMongoDBTestForIntegration() {
           .mutateWith(mockAuthentication(mockAuthentication))
           .get()
           .uri {
-            it.path("/api/v1/projects/my-project-slice")
+            it.path("/api/v1/projects/owned")
               .queryParam("page", pageNumber)
               .queryParam("size", pageSize)
               .build()
@@ -1027,7 +1027,7 @@ internal class ProjectIntegrationTest : BaseMongoDBTestForIntegration() {
         }
 
         it("나의 Project를 대상으로 PageSize만큼 Slice를 반환한다") {
-          performRequest.expectBody<RestSliceImpl<GetMyProjectResponseDto>>().consumeWith { response ->
+          performRequest.expectBody<RestSliceImpl<GetOwnedProjectResponseDto>>().consumeWith { response ->
             response.responseBody?.content?.size shouldBe pageSize
             response.responseBody?.isFirst shouldBe true
             response.responseBody?.isLast shouldBe false
