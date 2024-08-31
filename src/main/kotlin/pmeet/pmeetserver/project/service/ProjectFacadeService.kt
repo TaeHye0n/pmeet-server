@@ -20,7 +20,7 @@ import pmeet.pmeetserver.project.dto.comment.response.ProjectCommentResponseDto
 import pmeet.pmeetserver.project.dto.request.CreateProjectRequestDto
 import pmeet.pmeetserver.project.dto.request.SearchProjectRequestDto
 import pmeet.pmeetserver.project.dto.request.UpdateProjectRequestDto
-import pmeet.pmeetserver.project.dto.response.GetMyProjectResponseDto
+import pmeet.pmeetserver.project.dto.response.GetOwnedProjectResponseDto
 import pmeet.pmeetserver.project.dto.response.ProjectResponseDto
 import pmeet.pmeetserver.project.dto.response.ProjectWithUserResponseDto
 import pmeet.pmeetserver.project.dto.response.SearchProjectResponseDto
@@ -269,11 +269,11 @@ class ProjectFacadeService(
   }
 
   @Transactional(readOnly = true)
-  suspend fun getMyProjectSlice(userId: String, pageable: Pageable): Slice<GetMyProjectResponseDto> {
+  suspend fun getOwnedProjectSlice(userId: String, pageable: Pageable): Slice<GetOwnedProjectResponseDto> {
     val projects = projectService.getProjectSliceByUserIdOrderByCreatedAtDesc(userId, pageable)
     return SliceImpl(
       projects.content.map {
-        GetMyProjectResponseDto.of(
+        GetOwnedProjectResponseDto.of(
           it,
           it.thumbNailUrl?.let { fileService.generatePreSignedUrlToDownload(it) }
         )

@@ -27,9 +27,9 @@ import pmeet.pmeetserver.project.domain.ProjectComment
 import pmeet.pmeetserver.project.domain.ProjectTryout
 import pmeet.pmeetserver.project.domain.Recruitment
 import pmeet.pmeetserver.project.domain.enum.ProjectTryoutStatus
+import pmeet.pmeetserver.project.dto.comment.ProjectCommentWithChildDto
 import pmeet.pmeetserver.project.dto.comment.request.CreateProjectCommentRequestDto
 import pmeet.pmeetserver.project.dto.comment.response.ProjectCommentResponseDto
-import pmeet.pmeetserver.project.dto.comment.ProjectCommentWithChildDto
 import pmeet.pmeetserver.project.dto.request.CreateProjectRequestDto
 import pmeet.pmeetserver.project.dto.request.RecruitmentRequestDto
 import pmeet.pmeetserver.project.dto.request.SearchProjectRequestDto
@@ -672,7 +672,7 @@ internal class ProjectFacadeServiceUnitTest : DescribeSpec({
     }
   }
 
-  describe("getMyProjectSlice") {
+  describe("getOwnedProjectSlice") {
     context("userId와 pageable이 주어지면") {
       val pageNumber = 0
       val pageSize = 10
@@ -704,7 +704,7 @@ internal class ProjectFacadeServiceUnitTest : DescribeSpec({
           } answers { SliceImpl(projects.subList(0, pageable.pageSize), pageable, true) }
           coEvery { fileService.generatePreSignedUrlToDownload(any()) } answers { downloadUrls.iterator().next() }
 
-          val result = projectFacadeService.getMyProjectSlice(userId, pageable)
+          val result = projectFacadeService.getOwnedProjectSlice(userId, pageable)
 
           result.size shouldBe pageable.pageSize
           result.content.forEachIndexed { index, getMyProjectResponseDto ->
