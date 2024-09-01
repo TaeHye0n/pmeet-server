@@ -123,4 +123,14 @@ class ProjectController(
   ): Slice<GetOwnedProjectResponseDto> {
     return projectFacadeService.getOwnedProjectSlice(userId.awaitSingle(), PageRequest.of(page, size))
   }
+//
+//  @GetMapping("/my/im-progress")
+//  @ResponseStatus(HttpStatus.OK)
+//  suspend fun getMyProjectSlice(
+//    @AuthenticationPrincipal userId: Mono<String>,
+//    @RequestParam(defaultValue = "0") page: Int,
+//    @RequestParam(defaultValue = "6") size: Int
+//  ): Slice<GetMyProjectResponseDto> {
+////    return projectFacadeService.getMyProjectSlice(userId.awaitSingle(), PageRequest.of(page, size))
+//  }
 }
