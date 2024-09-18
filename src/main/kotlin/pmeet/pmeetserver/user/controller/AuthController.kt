@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ServerWebExchange
-import pmeet.pmeetserver.user.service.oauth.OauthFacadeService
 import pmeet.pmeetserver.user.dto.request.CheckMailRequestDto
 import pmeet.pmeetserver.user.dto.request.CheckNickNameRequestDto
 import pmeet.pmeetserver.user.dto.request.SendVerificationCodeRequestDto
@@ -22,6 +21,7 @@ import pmeet.pmeetserver.user.dto.request.VerifyVerificationCodeRequestDto
 import pmeet.pmeetserver.user.dto.response.UserJwtDto
 import pmeet.pmeetserver.user.dto.response.UserSignUpResponseDto
 import pmeet.pmeetserver.user.service.UserFacadeService
+import pmeet.pmeetserver.user.service.oauth.OauthFacadeService
 import java.net.URI
 
 @RestController
@@ -50,7 +50,6 @@ class AuthController(
       append("https://pmeet.site/?")
       append("userId=${userJwt.userId}&")
       append("accessToken=${userJwt.accessToken}&")
-      append("refreshToken=${userJwt.refreshToken}")
     }
     exchange.response.statusCode = HttpStatus.SEE_OTHER
     exchange.response.headers.location = URI.create(redirectUrl)
@@ -63,7 +62,6 @@ class AuthController(
       append("https://pmeet.site/?")
       append("userId=${userJwt.userId}&")
       append("accessToken=${userJwt.accessToken}&")
-      append("refreshToken=${userJwt.refreshToken}")
     }
     exchange.response.statusCode = HttpStatus.SEE_OTHER
     exchange.response.headers.location = URI.create(redirectUrl)
@@ -77,7 +75,6 @@ class AuthController(
       append("https://pmeet.site/?")
       append("userId=${userJwt.userId}&")
       append("accessToken=${userJwt.accessToken}&")
-      append("refreshToken=${userJwt.refreshToken}")
     }
     exchange.response.statusCode = HttpStatus.SEE_OTHER
     exchange.response.headers.location = URI.create(redirectUrl)
